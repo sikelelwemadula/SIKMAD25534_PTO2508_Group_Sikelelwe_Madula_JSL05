@@ -86,12 +86,31 @@ function setupModalCloseHandler() {
 }
 
 /**
+ * Sets up the second modal (Add Task Modal)
+ */
+function setupSecondModalHandler() {
+  const modal = document.getElementById("add-task-modal"); 
+  const openBtn = document.getElementById("add-new-task-btn");
+  const closeBtn = document.getElementById("cancel-add-btn");
+
+  openBtn.addEventListener("click", () => {
+    modal.showModal();
+  });
+
+  closeBtn.addEventListener("click", () => {
+    modal.close();
+  });
+}
+
+
+/**
  * Initializes the task board and modal handlers.
  */
 function initTaskBoard() {
   clearExistingTasks();
   renderTasks(initialTasks);
   setupModalCloseHandler();
+  setupSecondModalHandler();
 }
 
 // Wait until DOM is fully loaded
