@@ -1,5 +1,16 @@
 import { initialTasks } from "../../initialData.js";
-console.log("Initial Tasks:", initialTasks);
+
+const STORAGE_KEY = "kanbanTasks";
+let tasks = [];
+
+function getStoredTasks() {
+  const stored = localStorage.getItem(STORAGE_KEY);
+  return stored ? JSON.parse(stored) : initialTasks.slice();
+}
+
+function saveTasks() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+}
 
 /**
  * Creates a single task DOM element.
@@ -42,12 +53,11 @@ function clearExistingTasks() {
 }
 
 /**
- * Renders all tasks from initial data to the UI.
- * Groups tasks by status and appends them to their respective columns.
- * @param {Array<Object>} tasks - Array of task objects.
+ * Renders all tasks from the current task list to the UI.
+ * @param {Array<Object>} tasksToRender - Array of task objects.
  */
-function renderTasks(tasks) {
-  tasks.forEach((task) => {
+function renderTasks(tasksToRender) {
+  tasksToRender.forEach((task) => {
     const container = getTaskContainerByStatus(task.status);
     if (container) {
       const taskElement = createTaskElement(task);
@@ -86,12 +96,12 @@ function setupModalCloseHandler() {
 }
 
 /**
- * Sets up the second modal (Add Task Modal)
+ * Sets up the second modal (Add Task Modal).
  */
 function setupSecondModalHandler() {
-  const modal = document.getElementById("add-task-modal"); 
   const openBtn = document.getElementById("add-new-task-btn");
   const closeBtn = document.getElementById("cancel-add-btn");
+  const modal = document.getElementById("add-task-modal");
 
   openBtn.addEventListener("click", () => {
     modal.showModal();
@@ -102,16 +112,55 @@ function setupSecondModalHandler() {
   });
 }
 
+/**
+ * Handles the logic for creating a new task from the Add Task modal.
+ */
+function setupAddNewTaskLogic() {
+  const addTaskForm = document.getElementById("new-task-modal-window");
+  const addTaskModal = document.getElementById("add-task-modal");
+
+  addTaskForm.addEventListener("submit", (event) => {
+    event.preventDefault();
+
+    const title = document.getElementById("title-input").value.trim();
+    const description = document.getElementById("desc-input").value.trim();
+    const status = document.getElementById("select-status").value;
+
+    if (!title) {
+      return;
+    }
+
+    const newTask = {
+      id: Date.now(),
+      title,
+      description,
+      status,
+    };
+
+    tasks.push(newTask);
+    saveTasks();
+
+    clearExistingTasks();
+    renderTasks(tasks);
+
+    addTaskModal.close();
+    addTaskForm.reset();
+  });
+}
 
 /**
  * Initializes the task board and modal handlers.
  */
 function initTaskBoard() {
+  tasks = getStoredTasks();
   clearExistingTasks();
-  renderTasks(initialTasks);
+  renderTasks(tasks);
   setupModalCloseHandler();
   setupSecondModalHandler();
+  setupAddNewTaskLogic();
 }
 
 // Wait until DOM is fully loaded
 document.addEventListener("DOMContentLoaded", initTaskBoard);
+
+
