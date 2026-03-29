@@ -1,13 +1,30 @@
 import { initialTasks } from "../../initialData.js";
 
+/**
+ * LocalStorage key used for persisting kanban tasks.
+ * @type {string}
+ */
 const STORAGE_KEY = "kanbanTasks";
+
+/**
+ * Current task list loaded in memory.
+ * @type {Array<Object>}
+ */
 let tasks = [];
 
+/**
+ * Retrieves stored tasks from localStorage or falls back to initial data.
+ * @returns {Array<Object>} Saved tasks array.
+ */
 function getStoredTasks() {
   const stored = localStorage.getItem(STORAGE_KEY);
   return stored ? JSON.parse(stored) : initialTasks.slice();
 }
 
+/**
+ * Persists the current task list to localStorage.
+ * @returns {void}
+ */
 function saveTasks() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
 }
@@ -114,6 +131,7 @@ function setupSecondModalHandler() {
 
 /**
  * Handles the logic for creating a new task from the Add Task modal.
+ * @returns {void}
  */
 function setupAddNewTaskLogic() {
   const addTaskForm = document.getElementById("new-task-modal-window");
@@ -150,6 +168,7 @@ function setupAddNewTaskLogic() {
 
 /**
  * Initializes the task board and modal handlers.
+ * @returns {void}
  */
 function initTaskBoard() {
   tasks = getStoredTasks();
